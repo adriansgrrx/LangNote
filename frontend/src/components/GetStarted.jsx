@@ -13,25 +13,21 @@ const GetStarted = () => {
             <p className="text-base-content/70">
                 Hi there! Welcome to LangNote. Get started by creating your LangNote
                 account.
-                <br />
             </p>
-
-            {/* <div className="card bg-base-100 w-96 shadow-xl" onClick={() => document.getElementById('note_modal').showModal()}>
-                <div className="card-body">
-                    <h2 className="card-title">Shoes!</h2>
-                    <p>If a dog chews shoes whose shoes does he choose?</p>
-                </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Link
+                    to="/register"
+                    className="btn btn-primary text-amber-100 font-medium font-mono"
+                >
+                    Create Free Account
+                </Link>
+                <Link
+                    to="/login"
+                    className="btn btn-outline btn-primary font-medium font-mono"
+                >
+                    Log In
+                </Link>
             </div>
-
-            <dialog id="note_modal" className="modal">
-                <div className="modal-box">
-                    <form method="dialog">
-                        <X className="absolute right-2 top-2"/>
-                    </form>
-                    <h3 className="font-bold text-lg">Hello!</h3>
-                    <p className="py-4">Press ESC key or click on ✕ button to close</p>
-                </div>
-            </dialog> */}
         </div>
     );
 };

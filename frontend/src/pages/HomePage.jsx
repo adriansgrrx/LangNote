@@ -19,7 +19,14 @@ const HomePage = ({ user, error, setUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!user) {
+      setNotes([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchNotes = async () => {
+      setLoading(true);
       try {
         const res = await api.get("/notes");
         setNotes(res.data);
@@ -34,7 +41,7 @@ const HomePage = ({ user, error, setUser }) => {
     };
 
     fetchNotes();
-  }, []);
+  }, [user]);
 
   const handleDelete = async () => {
     if (!window.confirm("Delete this note?")) return;

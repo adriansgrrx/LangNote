@@ -49,8 +49,7 @@ const Navbar = ({ user, setUser }) => {
 
                 <ul
                   tabIndex={0}
-                  className="dropdown-content menu p-2 shadow-xl ring-1 ring-black/10 rounded-box w-44 mt-4 z-50"
-                  style={{backgroundColor: "#ECDCC4"}}
+                  className="dropdown-content menu p-2 shadow-xl ring-1 ring-black/10 rounded-box w-44 mt-4 z-50 bg-base-200"
                 >
                   <li className="text-xs text-gray-500 px-2 py-1 mb-4">
                     {user.email}

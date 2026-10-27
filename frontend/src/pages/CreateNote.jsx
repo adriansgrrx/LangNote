@@ -84,7 +84,7 @@ const CreatePage = () => {
                   <label className='label'>
                     <span className='label-text'>Content</span>
                   </label>
-                  <textarea type="text" 
+                  <textarea 
                   placeholder='Write your note here...'
                   className='textarea textarea-bordered h-32'
                   value={content}

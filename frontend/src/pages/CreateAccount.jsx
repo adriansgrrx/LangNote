@@ -61,7 +61,7 @@ function CreateAccount({ setUser }) {
                     <span className="label-text">Username</span>
                   </label>
                   <input
-                    type="username"
+                    type="text"
                     name="username"
                     value={formData.username}
                     onChange={handleChange}

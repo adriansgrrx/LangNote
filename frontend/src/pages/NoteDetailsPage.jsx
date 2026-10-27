@@ -69,10 +69,24 @@ const NoteDetailsPage = () => {
     }
   };
 
-  if(loading) {
+  if (loading) {
     return (
-      <div className='min-h-screen bg-base-200 flex items-center justify-center'>
-        <LoaderIcon className='animate-spin size-5'/>
+      <div className='min-h-screen bg-base-200 flex items-center justify-center text-primary'>
+        <LoaderIcon className='animate-spin size-6'/>
+      </div>
+    );
+  }
+
+  if (!note) {
+    return (
+      <div className='min-h-screen bg-base-200 flex items-center justify-center font-mono'>
+        <div className='card bg-base-100 p-8 shadow-md text-center max-w-md mx-auto'>
+          <h2 className='text-xl font-bold mb-2'>Note not found</h2>
+          <p className='text-base-content/70 mb-6'>The note you are looking for does not exist or you do not have permission to view it.</p>
+          <Link to='/' className='btn btn-primary text-amber-100'>
+            <ArrowLeftIcon className='size-4 mr-1' /> Back to notes
+          </Link>
+        </div>
       </div>
     );
   }
@@ -86,15 +100,10 @@ const NoteDetailsPage = () => {
               <ArrowLeftIcon className='size-4'/>
               Back to notes
             </Link>
-            {/* <button onClick={handleDelete} className='btn btn-ghost text-error'>
-              <Trash2Icon className='h-4 w-4'/>
-              Delete Note
-            </button> */}
           </div>
 
           <div className='card bg-base-100'>
             <div className='card-body'>
-              {/* <div className='card-title text-2xl'>Create a New Note</div> */}
                 <div className='form-control mb-4'>
                   <label className='label'>
                     <span className='label-text'>Title</span>
@@ -102,7 +111,7 @@ const NoteDetailsPage = () => {
                   <input type="text" 
                   placeholder='Note Title'
                   className='input input-bordered'
-                  value={note.title}
+                  value={note.title || ''}
                   onChange={(e) => setNote({...note, title: e.target.value})}
                   />
                 </div>
@@ -110,10 +119,10 @@ const NoteDetailsPage = () => {
                   <label className='label'>
                     <span className='label-text'>Content</span>
                   </label>
-                  <textarea type="text" 
+                  <textarea 
                   placeholder='Write your note here...'
                   className='textarea textarea-bordered h-32'
-                  value={note.content}
+                  value={note.content || ''}
                   onChange={(e) => setNote({...note, content: e.target.value})}
                   />
                 </div>
