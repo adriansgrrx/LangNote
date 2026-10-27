@@ -31,7 +31,6 @@ const NoteCard = ({note, setNotes, onOpen, onDeleted}) => {
             
             toast.success("Note deleted successfully.");
         } catch (error) {
-            console.log("Failed to delete note", error);
             toast.error("Failed to delete the note.");
         }
     };

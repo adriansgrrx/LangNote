@@ -12,43 +12,21 @@ const NoteDetailsPage = () => {
   const navigate = useNavigate();
   
   const {id} = useParams();
-  console.log({id});
-
 
   useEffect(() => {
-    const fetchNote= async() => {
+    const fetchNote = async () => {
       try {
         const res = await api.get(`/notes/${id}`);
         setNote(res.data);
       } catch (error) {
         toast.error("Failed to fetch the note.");
-        console.log("Failed to fetch the note", error);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchNote();
-  }, [id])
-
-  console.log( {note} ) 
-
-  // const handleDelete = async () => {
-  //   // e.preventDefault();
-
-  //   if(!window.confirm("Are you sure you want to delete this note?")) return;
-
-  //   try {
-  //       await api.delete(`/notes/${id}`); 
-  //       // setNotes((prev) => prev.filter(note => note._id !== id));
-  //       toast.success("Note deleted successfully.");
-  //       navigate("/");
-
-  //   } catch (error) {
-  //       console.log("Failed to delete note", error);
-  //       toast.error("Failed to delete the note.");
-  //   }
-  // };
+  }, [id]);
 
   const handleSave = async() => {
     if(!note.title.trim() || !note.content.trim()){
@@ -63,7 +41,6 @@ const NoteDetailsPage = () => {
       toast.success("Note updated successfully");
     } catch (error) {
       toast.error("Failed to update note");
-      console.log("Error updating note", error);
     } finally {
       setSaving(false);
     }

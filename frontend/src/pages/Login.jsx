@@ -30,13 +30,11 @@ function Login({ setUser }) {
       navigate("/");
     } catch (error) {
       if (error.response?.status === 429) {
-        console.log("Failed to log in.", error);
         toast.error("Slow down! You're logging in many times in a row.", {
           duration: 4000,
           icon: "🚦",
         });
       } else {
-        console.log("Failed to log in.", error);
         toast.error(error.response?.data?.message || "Failed to log in.");
       }
     } finally {

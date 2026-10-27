@@ -101,16 +101,16 @@ const HomePage = ({ user, error, setUser }) => {
           {/* Search bar & Note count */}
           {notes.length > 0 && !isRateLimited && (
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-6 font-mono">
-              <div className="relative w-full sm:w-80">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-base-content/50" />
+              <label className="input input-bordered input-sm sm:input-md flex items-center gap-2.5 w-full sm:w-80">
+                <Search className="size-4 text-base-content/60 shrink-0" />
                 <input
                   type="text"
                   placeholder="Search notes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input input-bordered input-sm sm:input-md w-full pl-9"
+                  className="grow bg-transparent"
                 />
-              </div>
+              </label>
               <span className="text-xs text-base-content/60 self-end sm:self-center">
                 {filteredNotes.length} of {notes.length} {notes.length === 1 ? "note" : "notes"}
               </span>

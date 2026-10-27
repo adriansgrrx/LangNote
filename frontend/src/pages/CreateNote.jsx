@@ -13,8 +13,6 @@ const CreatePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(title);
-    console.log(content);
 
     if(!title.trim() || !content.trim()){
       toast.error("All fields are required.");
@@ -33,25 +31,21 @@ const CreatePage = () => {
 
     setLoading(true);
     try {
-      await api.post("/notes",
-        {
-          title,
-          content
-      })
+      await api.post("/notes", {
+        title,
+        content
+      });
       toast.success("Note created successfully!");
       navigate("/");
     } catch (error) {
       if(error.response?.status === 429){
-        console.log("Failed to create note.", error);
-        toast.error("Slow down! You're creating notes too fast.",
-          {
-            duration: 4000,
-            icon: "🚦"
+        toast.error("Slow down! You're creating notes too fast.", {
+          duration: 4000,
+          icon: "🚦"
         });
       } else {
-        console.log("Failed to create note.", error);
         toast.error("Failed to create note.");
-      };
+      }
     } finally {
       setLoading(false);
     }
