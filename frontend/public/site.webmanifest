@@ -1,0 +1,22 @@
+{
+  "name": "LangNote — Your Personal Notebook",
+  "short_name": "LangNote",
+  "description": "A warm, distraction-free notebook to capture, search, and organize your personal notes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ece3ca",
+  "theme_color": "#ece3ca",
+  "icons": [
+    {
+      "src": "/assets/langnote_48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/langnote.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

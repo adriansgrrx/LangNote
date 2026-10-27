@@ -139,6 +139,9 @@ const HomePage = ({ user, error, setUser }) => {
 
   return (
     <div className="min-h-screen">
+      <title>{user ? "Your Notes — LangNote" : "LangNote — Your Personal Notebook"}</title>
+      <meta name="description" content="LangNote — a warm, distraction-free notebook to capture, search, and organize your personal notes." />
+      <link rel="canonical" href="/" />
       <Navbar user={user} setUser={setUser} />
 
       {isRateLimited && <RateLimitedUI />}

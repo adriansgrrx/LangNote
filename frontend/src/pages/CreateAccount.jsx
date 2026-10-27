@@ -44,9 +44,12 @@ function CreateAccount({ setUser }) {
 
   return (
     <main className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <title>Create Free Account — LangNote</title>
+      <meta name="description" content="Create your free LangNote account to capture, search, and organize your personal thoughts and notes." />
+      <link rel="canonical" href="/register" />
       <div className="w-full max-w-md animate-fade-up">
         <Link to="/" className="flex items-center justify-center gap-2 mb-6 font-mono" aria-label="LangNote home">
-          <img src="/assets/langnote.png" alt="" className="size-9" />
+          <img src="/assets/langnote_48.png" alt="LangNote logo" className="size-9" />
           <span className="text-3xl font-extrabold text-primary tracking-tighter">LangNote</span>
         </Link>
         <div className="card bg-base-100 shadow-md border border-base-content/10 font-mono">

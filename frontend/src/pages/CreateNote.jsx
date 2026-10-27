@@ -61,6 +61,8 @@ const CreatePage = () => {
 
   return (
     <main className='min-h-screen bg-base-200'>
+      <title>Create a New Note — LangNote</title>
+      <meta name="robots" content="noindex, nofollow" />
       <div className='container mx-auto px-4 py-8'>
         <div className='max-w-2xl mx-auto animate-fade-up'>
           <Link to={'/'} id='create-back' className='btn btn-ghost mb-6 font-mono gap-2'>

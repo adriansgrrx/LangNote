@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use(express.json());
-app.use(rateLimiter);
+app.use("/api", rateLimiter);
 
 app.use("/api/notes", noteRoutes);
 app.use("/api/users", authRoutes);
