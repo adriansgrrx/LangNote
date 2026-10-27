@@ -5,7 +5,7 @@ import CreateNote from "./pages/CreateNote";
 import NoteDetailsPage from "./pages/NoteDetailsPage";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
-import axios from "axios";
+import api from "./lib/axios";
 import toast from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 // import Navbar from "./components/Navbar";
@@ -26,9 +26,7 @@ const App = () => {
       }
 
       try {
-        const res = await axios.get("api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/users/me");
         setUser(res.data);
       } catch (error) {
         localStorage.removeItem("token");

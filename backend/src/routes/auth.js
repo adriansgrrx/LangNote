@@ -12,10 +12,15 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({message: 'Please fill all the fields'});
         }
         
-        const userExist = await User.findOne({email});
+        const userExist = await User.findOne({
+            $or: [{ email }, { username }]
+        });
         
         if (userExist) {
-            return res.status(400).json({message: 'User already exist'});
+            const message = userExist.email === email 
+                ? 'Email already in use' 
+                : 'Username already taken';
+            return res.status(400).json({ message });
         }
         
         const user = await User.create({username, email, password});
@@ -28,6 +33,11 @@ router.post('/register', async (req, res) => {
             token
         })
     } catch (error) {
+        console.error("Register error:", error);
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern || {})[0] || 'Username or email';
+            return res.status(400).json({ message: `${field} already exists` });
+        }
         res.status(500).json({
             message: "Server error"
         })
