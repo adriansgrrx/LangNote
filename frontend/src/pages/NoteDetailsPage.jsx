@@ -139,6 +139,8 @@ const NoteDetailsPage = () => {
 
   return (
     <main className='min-h-screen bg-base-200'>
+      <title>{note?.title ? `${note.title} — LangNote` : "Note Details — LangNote"}</title>
+      <meta name="robots" content="noindex, nofollow" />
       <div className='container mx-auto px-4 py-8'>
         <div className='max-w-2xl mx-auto font-mono animate-fade-up'>
           <div className='flex items-center justify-between gap-3 mb-6'>

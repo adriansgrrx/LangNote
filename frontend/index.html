@@ -3,9 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/assets/langnote_48.png" />
+    <link rel="apple-touch-icon" href="/assets/langnote_48.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="LangNote — a warm, distraction-free notebook to capture, search, and organize your personal notes." />
+    <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#ece3ca" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LangNote" />
+    <meta property="og:title" content="LangNote — Your Personal Notebook" />
+    <meta property="og:description" content="A warm, distraction-free notebook to capture, search, and organize your personal notes." />
+    <meta property="og:image" content="/assets/langnote.png" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="LangNote — Your Personal Notebook" />
+    <meta name="twitter:description" content="A warm, distraction-free notebook to capture, search, and organize your personal notes." />
+    <meta name="twitter:image" content="/assets/langnote.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "LangNote",
+        "applicationCategory": "NoteTakingApplication",
+        "operatingSystem": "All",
+        "description": "A warm, distraction-free notebook to capture, search, and organize your personal notes.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+
     <meta http-equiv="Content-Security-Policy"
     content="
       default-src 'none';

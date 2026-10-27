@@ -24,7 +24,7 @@ const Navbar = ({ user, setUser }) => {
             className="flex items-center gap-2 hover:opacity-85 transition-opacity rounded-lg"
             aria-label="LangNote home"
           >
-            <img src="/assets/langnote.png" alt="" className="size-8 md:size-9" />
+            <img src="/assets/langnote_48.png" alt="LangNote logo" className="size-8 md:size-9" />
             <span className="text-2xl md:text-3xl font-extrabold text-primary font-mono tracking-tighter">
               LangNote
             </span>
