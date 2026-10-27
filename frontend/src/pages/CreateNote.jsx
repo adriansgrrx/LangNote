@@ -70,30 +70,39 @@ const CreatePage = () => {
               <div className='card-title text-2xl'>Create a New Note</div>
               <form onSubmit={handleSubmit}>
                 <div className='form-control mb-4'>
-                  <label className='label'>
-                    <span className='label-text'>Title</span>
-                  </label>
+                  <div className='flex justify-between items-center mb-1'>
+                    <label className='label-text font-bold'>Title</label>
+                    <span className={`text-xs ${title.length >= 8 ? 'text-success' : 'text-base-content/60'}`}>
+                      {title.length}/8 min
+                    </span>
+                  </div>
                   <input type="text" 
-                  placeholder='Note Title'
-                  className='input input-bordered'
+                  placeholder='e.g., Weekly Project Summary'
+                  className='input input-bordered w-full'
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   />
                 </div>
                 <div className='form-control mb-4'>
-                  <label className='label'>
-                    <span className='label-text'>Content</span>
-                  </label>
+                  <div className='flex justify-between items-center mb-1'>
+                    <label className='label-text font-bold'>Content</label>
+                    <span className={`text-xs ${content.length >= 10 ? 'text-success' : 'text-base-content/60'}`}>
+                      {content.length}/10 min
+                    </span>
+                  </div>
                   <textarea 
-                  placeholder='Write your note here...'
-                  className='textarea textarea-bordered h-32'
+                  placeholder='Write your thoughts, ideas, or reminders here...'
+                  className='textarea textarea-bordered min-h-[240px] md:min-h-[300px] leading-relaxed text-sm'
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   />
                 </div>
 
-                <div className='card-actions justify-end'>
-                  <button className='btn btn-primary text-amber-100' disabled={loading}>
+                <div className='card-actions justify-end mt-4'>
+                  <button 
+                    className='btn btn-primary text-primary-content min-w-32' 
+                    disabled={loading || title.trim().length < 8 || content.trim().length < 10}
+                  >
                     {loading ? 'Creating...' : 'Create Note'}
                   </button>
                 </div>

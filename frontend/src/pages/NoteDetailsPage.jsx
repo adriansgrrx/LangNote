@@ -117,19 +117,19 @@ const NoteDetailsPage = () => {
                 </div>
                 <div className='form-control mb-4'>
                   <label className='label'>
-                    <span className='label-text'>Content</span>
+                    <span className='label-text font-bold'>Content</span>
                   </label>
                   <textarea 
                   placeholder='Write your note here...'
-                  className='textarea textarea-bordered h-32'
+                  className='textarea textarea-bordered min-h-[240px] md:min-h-[300px] leading-relaxed text-sm'
                   value={note.content || ''}
                   onChange={(e) => setNote({...note, content: e.target.value})}
                   />
                 </div>
 
-                <div className='card-actions justify-end'>
-                  <button className='btn btn-primary text-amber-100' disabled={saving} onClick={handleSave}>
-                    {saving ? 'Save...' : 'Save Changes'}
+                <div className='card-actions justify-end mt-4'>
+                  <button className='btn btn-primary text-primary-content min-w-32' disabled={saving} onClick={handleSave}>
+                    {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>             
 

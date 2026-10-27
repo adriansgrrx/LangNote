@@ -7,7 +7,7 @@ import GetStarted from "../components/GetStarted.jsx";
 import api from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
-import { Loader, LoaderIcon, X } from "lucide-react";
+import { LoaderIcon, Search, X } from "lucide-react";
 import { formatDate, formatToUppercase } from "../lib/utils.js";
 
 const HomePage = ({ user, error, setUser }) => {
@@ -15,6 +15,7 @@ const HomePage = ({ user, error, setUser }) => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -52,13 +53,11 @@ const HomePage = ({ user, error, setUser }) => {
         prev.filter((n) => n._id !== selectedNote._id)
       );
 
-      // Clear selectedNote first
       setSelectedNote(null);
 
-      // Close modal in the next tick so React re-render happens first
       setTimeout(() => {
         const modal = document.getElementById("note_modal");
-        if (modal.open) modal.close();
+        if (modal?.open) modal.close();
       }, 0);
 
       toast.success("Note deleted successfully");
@@ -67,9 +66,7 @@ const HomePage = ({ user, error, setUser }) => {
     }
   };
 
-  // Add this function to handle deletion from NoteCard
   const handleNoteDeleted = (deletedNoteId) => {
-    // If the deleted note is currently selected in the modal, close the modal
     if (selectedNote && selectedNote._id === deletedNoteId) {
       setSelectedNote(null);
       setTimeout(() => {
@@ -78,6 +75,11 @@ const HomePage = ({ user, error, setUser }) => {
       }, 0);
     }
   };
+
+  const filteredNotes = notes.filter((n) =>
+    n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    n.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -92,11 +94,30 @@ const HomePage = ({ user, error, setUser }) => {
       <Navbar user={user} setUser={setUser} />
 
       {isRateLimited && <RateLimitedUI />}
-      {error && <p>{error}</p>}
+      {error && <p className="text-center text-error font-mono my-2">{error}</p>}
 
       {user ? (
         <div className="max-w-6xl mx-auto p-4 mt-6">
-          {/* Skeleton Loading — ONLY for logged-in users */}
+          {/* Search bar & Note count */}
+          {notes.length > 0 && !isRateLimited && (
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-6 font-mono">
+              <div className="relative w-full sm:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-base-content/50" />
+                <input
+                  type="text"
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input input-bordered input-sm sm:input-md w-full pl-9"
+                />
+              </div>
+              <span className="text-xs text-base-content/60 self-end sm:self-center">
+                {filteredNotes.length} of {notes.length} {notes.length === 1 ? "note" : "notes"}
+              </span>
+            </div>
+          )}
+
+          {/* Skeleton Loading */}
           {loading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -108,10 +129,10 @@ const HomePage = ({ user, error, setUser }) => {
             </div>
           )}
 
-          {/* Notes */}
-          {!loading && notes.length > 0 && !isRateLimited && (
+          {/* Notes Grid */}
+          {!loading && filteredNotes.length > 0 && !isRateLimited && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-300">
-              {notes.map((note) => (
+              {filteredNotes.map((note) => (
                 <NoteCard 
                   key={note._id} 
                   note={note} 
@@ -126,12 +147,26 @@ const HomePage = ({ user, error, setUser }) => {
             </div>
           )}
 
+          {/* Search No Results */}
+          {!loading && notes.length > 0 && filteredNotes.length === 0 && !isRateLimited && (
+            <div className="text-center py-12 font-mono text-base-content/70">
+              <p>No notes matched "{searchQuery}"</p>
+              <button 
+                onClick={() => setSearchQuery("")} 
+                className="btn btn-ghost btn-sm mt-2 text-primary"
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+
           {/* Empty State */}
           {!loading && notes.length === 0 && !isRateLimited && (
             <NotesNotFound username={user.username} />
           )}
 
-          <dialog id="note_modal" className="modal">
+          {/* Full Note Preview Modal */}
+          <dialog id="note_modal" className="modal modal-bottom sm:modal-middle">
             {selectedNote && (
               <div className="modal-box max-w-xl mx-auto font-mono">
                 {/* Close button (top-right) */}
@@ -141,14 +176,21 @@ const HomePage = ({ user, error, setUser }) => {
                   </button>
                 </form>
 
-                {/* Note content */}
-                <span className='text-sm text-base-content text-start'>{formatDate(new Date(selectedNote.createdAt))} </span>
-                <h3 className="font-bold text-lg line-clamp-3 mt-2">{formatToUppercase(selectedNote.title)}</h3>
-                <p className="py-4 whitespace-pre-wrap line-clamp-3">
-                  {selectedNote.content}
-                </p>
+                {/* Note metadata & content (unclamped) */}
+                <span className='text-xs text-base-content/60 block'>
+                  {formatDate(new Date(selectedNote.createdAt))}
+                </span>
+                <h3 className="font-bold text-xl mt-2 break-words">
+                  {formatToUppercase(selectedNote.title)}
+                </h3>
+                
+                <div className="py-4 max-h-[60vh] overflow-y-auto pr-1">
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed break-words text-base-content/90">
+                    {selectedNote.content}
+                  </p>
+                </div>
 
-                {/* Actions (bottom-right) */}
+                {/* Actions */}
                 <div className="modal-action">
                   <button
                     className="btn btn-sm btn-primary btn-outline"
@@ -165,7 +207,6 @@ const HomePage = ({ user, error, setUser }) => {
                   >
                     Delete
                   </button>
-
                 </div>
               </div>
             )}
