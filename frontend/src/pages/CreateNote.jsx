@@ -51,64 +51,88 @@ const CreatePage = () => {
     }
   };
 
+  const canSubmit = !loading && title.trim().length >= 8 && content.trim().length >= 10;
+
+  const handleKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && canSubmit) {
+      handleSubmit(e);
+    }
+  };
+
   return (
-    <div className='min-h-screen bg-base-200'>
+    <main className='min-h-screen bg-base-200'>
       <div className='container mx-auto px-4 py-8'>
-        <div className='max-w-2xl mx-auto'>
-          <Link to={'/'} className='btn btn-ghost mb-6 font-mono'>
+        <div className='max-w-2xl mx-auto animate-fade-up'>
+          <Link to={'/'} id='create-back' className='btn btn-ghost mb-6 font-mono gap-2'>
             <ArrowLeftIcon className='size-4'/>
             Back to notes
           </Link>
-          <div className='card bg-base-100 font-mono'>
+          <div className='card bg-base-100 font-mono shadow-sm border border-base-content/10'>
             <div className='card-body'>
-              <div className='card-title text-2xl'>Create a New Note</div>
-              <form onSubmit={handleSubmit}>
+              <h1 className='card-title text-2xl font-extrabold tracking-tight'>Create a New Note</h1>
+              <p className='text-sm text-base-content/60 -mt-1 mb-2'>Capture an idea before it slips away.</p>
+              <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} noValidate>
                 <div className='form-control mb-4'>
                   <div className='flex justify-between items-center mb-1'>
-                    <label className='label-text font-bold'>Title</label>
-                    <span className={`text-xs ${title.length >= 8 ? 'text-success' : 'text-base-content/60'}`}>
-                      {title.length}/8 min
+                    <label htmlFor='note-title' className='label-text font-bold'>Title</label>
+                    <span
+                      id='note-title-hint'
+                      className={`text-xs transition-colors ${title.trim().length >= 8 ? 'text-success' : 'text-base-content/60'}`}
+                    >
+                      {title.trim().length}/8 min
                     </span>
                   </div>
-                  <input type="text" 
-                  placeholder='e.g., Weekly Project Summary'
-                  className='input input-bordered w-full'
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  <input
+                    id='note-title'
+                    type="text"
+                    autoFocus
+                    maxLength={200}
+                    aria-describedby='note-title-hint'
+                    placeholder='e.g., Weekly Project Summary'
+                    className='input input-bordered w-full focus:input-primary'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                   />
                 </div>
                 <div className='form-control mb-4'>
                   <div className='flex justify-between items-center mb-1'>
-                    <label className='label-text font-bold'>Content</label>
-                    <span className={`text-xs ${content.length >= 10 ? 'text-success' : 'text-base-content/60'}`}>
-                      {content.length}/10 min
+                    <label htmlFor='note-content' className='label-text font-bold'>Content</label>
+                    <span
+                      id='note-content-hint'
+                      className={`text-xs transition-colors ${content.trim().length >= 10 ? 'text-success' : 'text-base-content/60'}`}
+                    >
+                      {content.trim().length}/10 min
                     </span>
                   </div>
-                  <textarea 
-                  placeholder='Write your thoughts, ideas, or reminders here...'
-                  className='textarea textarea-bordered min-h-[240px] md:min-h-[300px] leading-relaxed text-sm'
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  <textarea
+                    id='note-content'
+                    aria-describedby='note-content-hint'
+                    placeholder='Write your thoughts, ideas, or reminders here...'
+                    className='textarea textarea-bordered min-h-[240px] md:min-h-[300px] leading-relaxed text-sm focus:textarea-primary'
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                   />
                 </div>
 
-                <div className='card-actions justify-end mt-4'>
-                  <button 
-                    className='btn btn-primary text-primary-content min-w-32' 
-                    disabled={loading || title.trim().length < 8 || content.trim().length < 10}
+                <div className='card-actions items-center justify-between mt-4'>
+                  <span className='hidden sm:inline text-xs text-base-content/50'>
+                    <kbd className='kbd kbd-xs'>Ctrl</kbd> + <kbd className='kbd kbd-xs'>Enter</kbd> to save
+                  </span>
+                  <button
+                    id='create-submit'
+                    type='submit'
+                    className='btn btn-primary text-primary-content min-w-32 w-full sm:w-auto'
+                    disabled={!canSubmit}
                   >
-                    {loading ? 'Creating...' : 'Create Note'}
+                    {loading ? <><span className='loading loading-spinner loading-sm' /> Creating...</> : 'Create Note'}
                   </button>
                 </div>
               </form>
-              
-
             </div>
           </div>
-
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

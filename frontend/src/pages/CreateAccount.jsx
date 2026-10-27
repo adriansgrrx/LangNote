@@ -43,56 +43,64 @@ function CreateAccount({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="card bg-base-100 shadow-md font-mono">
+    <main className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="w-full max-w-md animate-fade-up">
+        <Link to="/" className="flex items-center justify-center gap-2 mb-6 font-mono" aria-label="LangNote home">
+          <img src="/assets/langnote.png" alt="" className="size-9" />
+          <span className="text-3xl font-extrabold text-primary tracking-tighter">LangNote</span>
+        </Link>
+        <div className="card bg-base-100 shadow-md border border-base-content/10 font-mono">
           <div className="card-body p-6 sm:p-8">
-            <div className="card-title text-2xl mb-4 justify-center font-bold text-primary">
-              Create Account
-            </div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-center">
+              Create your account
+            </h1>
+            <p className="text-sm text-base-content/60 text-center mb-4">Start capturing your ideas in seconds.</p>
             <form onSubmit={handleSubmit}>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="register-username">
                   <span className="label-text font-bold">Username</span>
                 </label>
                 <input
+                  id="register-username"
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="ex: vlitz03"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full focus:input-primary"
                   required
                   autoComplete="username"
                 />
               </div>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="register-email">
                   <span className="label-text font-bold">Email</span>
                 </label>
                 <input
+                  id="register-email"
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="ex: user@example.com"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full focus:input-primary"
                   required
                   autoComplete="email"
                 />
               </div>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="register-password">
                   <span className="label-text font-bold">Password</span>
                 </label>
                 <div className="relative">
                   <input
+                    id="register-password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Your password"
-                    className="input input-bordered w-full pr-10"
+                    className="input input-bordered w-full pr-10 focus:input-primary"
                     required
                     autoComplete="new-password"
                   />
@@ -107,26 +115,28 @@ function CreateAccount({ setUser }) {
                 </div>
               </div>
 
-              <p className="text-center text-sm mt-6">
-                Already have an account?{" "}
-                <Link to="/login" className="text-primary font-bold underline">
-                  Log in
-                </Link>
-              </p>
-
               <div className="card-actions mt-6">
                 <button
+                  id="register-submit"
+                  type="submit"
                   className="btn btn-primary text-primary-content w-full"
                   disabled={loading}
                 >
-                  {loading ? "Working on it..." : "Register"}
+                  {loading ? <><span className="loading loading-spinner loading-sm" /> Creating account...</> : "Register"}
                 </button>
               </div>
+
+              <p className="text-center text-sm mt-6 text-base-content/70">
+                Already have an account?{" "}
+                <Link to="/login" id="register-to-login" className="link link-hover text-base-content font-bold">
+                  Log in
+                </Link>
+              </p>
             </form>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

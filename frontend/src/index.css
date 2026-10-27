@@ -1,3 +1,57 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply font-mono bg-base-200 text-base-content antialiased;
+    font-feature-settings: "calt" 1, "liga" 1;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  ::selection {
+    @apply bg-primary/30 text-base-content;
+  }
+
+  /* Consistent, visible keyboard focus across all themes */
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-primary;
+  }
+
+  /* Thin, theme-aware scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(var(--bc) / 0.25) transparent;
+  }
+}
+
+@layer components {
+  /* Deterministic accent tints for note cards (theme-aware) */
+  .note-accent-0 { --note-accent: oklch(var(--p)); }
+  .note-accent-1 { --note-accent: oklch(var(--s)); }
+  .note-accent-2 { --note-accent: oklch(var(--a)); }
+  .note-accent-3 { --note-accent: oklch(var(--in)); }
+  .note-accent-4 { --note-accent: oklch(var(--su)); }
+  .note-accent-5 { --note-accent: oklch(var(--wa)); }
+
+  .note-card {
+    border-top: 4px solid var(--note-accent);
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

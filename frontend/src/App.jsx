@@ -6,12 +6,10 @@ import NoteDetailsPage from "./pages/NoteDetailsPage";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import api from "./lib/axios";
-import toast from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +24,7 @@ const App = () => {
       try {
         const res = await api.get("/users/me");
         setUser(res.data);
-      } catch (error) {
+      } catch {
         localStorage.removeItem("token");
       } finally {
         setAuthLoading(false);
@@ -37,9 +35,9 @@ const App = () => {
   }, []);
 
   return (
-    <div data-theme="retro">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <Routes>
-        <Route path="/" element={<HomePage user={user} setUser={setUser} error={error} />} />
+        <Route path="/" element={<HomePage user={user} setUser={setUser} />} />
         <Route 
           path="/login" 
           element={!authLoading && user ? <Navigate to="/" replace /> : <Login setUser={setUser} />} 
