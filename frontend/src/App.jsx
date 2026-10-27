@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import HomePage from "./pages/HomePage";
 import CreateNote from "./pages/CreateNote";
 import NoteDetailsPage from "./pages/NoteDetailsPage";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import api from "./lib/axios";
-import toast from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
-// import Navbar from "./components/Navbar";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
   const [authLoading, setAuthLoading] = useState(true);
-  // console.log(user);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -28,7 +24,7 @@ const App = () => {
       try {
         const res = await api.get("/users/me");
         setUser(res.data);
-      } catch (error) {
+      } catch {
         localStorage.removeItem("token");
       } finally {
         setAuthLoading(false);
@@ -38,21 +34,34 @@ const App = () => {
     fetchUser();
   }, []);
 
-
   return (
-    <div data-theme="retro">
+    <div className="min-h-screen bg-base-200 text-base-content">
       <Routes>
-        <Route path="/" element={<HomePage user={user} setUser={setUser} error={error} />} />
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/register" element={<CreateAccount setUser={setUser} />} />
+        <Route path="/" element={<HomePage user={user} setUser={setUser} />} />
+        <Route 
+          path="/login" 
+          element={!authLoading && user ? <Navigate to="/" replace /> : <Login setUser={setUser} />} 
+        />
+        <Route 
+          path="/register" 
+          element={!authLoading && user ? <Navigate to="/" replace /> : <CreateAccount setUser={setUser} />} 
+        />
         <Route 
           path="/create" 
           element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute user={user} authLoading={authLoading}>
               <CreateNote />
             </ProtectedRoute>
-          } />
-        <Route path="/note/:id" element={<NoteDetailsPage />} />
+          } 
+        />
+        <Route 
+          path="/note/:id" 
+          element={
+            <ProtectedRoute user={user} authLoading={authLoading}>
+              <NoteDetailsPage />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </div>
   );

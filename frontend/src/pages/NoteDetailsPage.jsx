@@ -1,56 +1,57 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router';
 import api from '../lib/axios';
-import { LoaderIcon, ArrowLeftIcon, Trash2Icon } from 'lucide-react';
+import { ArrowLeftIcon, Trash2Icon, SaveIcon } from 'lucide-react';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { formatDate, formatRelative, formatToUppercase } from '../lib/utils';
 
 const NoteDetailsPage = () => {
   const [note, setNote] = useState(null);
+  const [original, setOriginal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
   const navigate = useNavigate();
-  
-  const {id} = useParams();
-  console.log({id});
 
+  const {id} = useParams();
 
   useEffect(() => {
-    const fetchNote= async() => {
+    const fetchNote = async () => {
       try {
         const res = await api.get(`/notes/${id}`);
         setNote(res.data);
-      } catch (error) {
+        setOriginal(res.data);
+      } catch {
         toast.error("Failed to fetch the note.");
-        console.log("Failed to fetch the note", error);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchNote();
-  }, [id])
+  }, [id]);
 
-  console.log( {note} ) 
+  const isDirty =
+    !!note && !!original &&
+    (note.title !== original.title || note.content !== original.content);
 
-  // const handleDelete = async () => {
-  //   // e.preventDefault();
+  // Warn before closing the tab with unsaved changes
+  useEffect(() => {
+    if (!isDirty) return;
+    const onBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [isDirty]);
 
-  //   if(!window.confirm("Are you sure you want to delete this note?")) return;
-
-  //   try {
-  //       await api.delete(`/notes/${id}`); 
-  //       // setNotes((prev) => prev.filter(note => note._id !== id));
-  //       toast.success("Note deleted successfully.");
-  //       navigate("/");
-
-  //   } catch (error) {
-  //       console.log("Failed to delete note", error);
-  //       toast.error("Failed to delete the note.");
-  //   }
-  // };
-
-  const handleSave = async() => {
+  const handleSave = useCallback(async () => {
+    if (!note || saving) return;
     if(!note.title.trim() || !note.content.trim()){
       toast.error("Please add a title or content")
       return;
@@ -59,76 +60,198 @@ const NoteDetailsPage = () => {
     setSaving(true)
 
     try {
-      await api.put(`/notes/${id}`, note);
+      const res = await api.put(`/notes/${id}`, { title: note.title, content: note.content });
+      const saved = res.data && res.data._id ? res.data : { ...note, updatedAt: new Date().toISOString() };
+      setNote(saved);
+      setOriginal(saved);
       toast.success("Note updated successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update note");
-      console.log("Error updating note", error);
     } finally {
       setSaving(false);
     }
+  }, [id, note, saving]);
+
+  // Ctrl/Cmd + S to save
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (isDirty) handleSave();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [handleSave, isDirty]);
+
+  const handleBack = (e) => {
+    if (isDirty) {
+      e.preventDefault();
+      setLeaveOpen(true);
+    }
   };
 
-  if(loading) {
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await api.delete(`/notes/${id}`);
+      toast.success("Note deleted");
+      setOriginal(note); // clear dirty state so navigation isn't blocked
+      navigate('/');
+    } catch {
+      toast.error("Failed to delete note");
+      setDeleting(false);
+      setConfirmOpen(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className='min-h-screen bg-base-200 flex items-center justify-center'>
-        <LoaderIcon className='animate-spin size-5'/>
-      </div>
+      <main className='min-h-screen bg-base-200' aria-busy='true'>
+        <div className='container mx-auto px-4 py-8'>
+          <div className='max-w-2xl mx-auto animate-pulse space-y-6'>
+            <div className='h-10 w-40 rounded-btn bg-base-300' />
+            <div className='card bg-base-100 p-6 space-y-4 border border-base-content/10'>
+              <div className='h-4 w-16 rounded bg-base-300' />
+              <div className='h-12 w-full rounded-btn bg-base-300' />
+              <div className='h-4 w-20 rounded bg-base-300' />
+              <div className='h-64 w-full rounded-btn bg-base-300' />
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!note) {
+    return (
+      <main className='min-h-screen bg-base-200 flex items-center justify-center font-mono px-4'>
+        <div className='card bg-base-100 p-8 shadow-md text-center max-w-md mx-auto border border-base-content/10 animate-fade-up'>
+          <h1 className='text-xl font-bold mb-2'>Note not found</h1>
+          <p className='text-base-content/70 mb-6'>The note you are looking for does not exist or you do not have permission to view it.</p>
+          <Link to='/' className='btn btn-primary text-primary-content gap-2'>
+            <ArrowLeftIcon className='size-4' /> Back to notes
+          </Link>
+        </div>
+      </main>
     );
   }
 
   return (
-    <div className='min-h-screen bg-base-200'>
+    <main className='min-h-screen bg-base-200'>
       <div className='container mx-auto px-4 py-8'>
-        <div className='max-w-2xl mx-auto font-mono'>
-          <div className='flex items-center justify-between mb-6'>
-            <Link to={'/'} className='btn btn-ghost mb-6 font-mono'>
+        <div className='max-w-2xl mx-auto font-mono animate-fade-up'>
+          <div className='flex items-center justify-between gap-3 mb-6'>
+            <Link to={'/'} id='details-back' onClick={handleBack} className='btn btn-ghost font-mono gap-2'>
               <ArrowLeftIcon className='size-4'/>
               Back to notes
             </Link>
-            {/* <button onClick={handleDelete} className='btn btn-ghost text-error'>
-              <Trash2Icon className='h-4 w-4'/>
-              Delete Note
-            </button> */}
+            <button
+              id='details-delete'
+              className='btn btn-ghost text-error gap-2 hover:bg-error/10'
+              onClick={() => setConfirmOpen(true)}
+            >
+              <Trash2Icon className='size-4' />
+              <span className='hidden sm:inline'>Delete</span>
+            </button>
           </div>
 
-          <div className='card bg-base-100'>
+          <div className='card bg-base-100 shadow-sm border border-base-content/10'>
             <div className='card-body'>
-              {/* <div className='card-title text-2xl'>Create a New Note</div> */}
+                <div className='flex flex-wrap items-baseline justify-between gap-2 mb-2'>
+                  <h1 className='text-2xl font-extrabold tracking-tight'>Edit note</h1>
+                  <span className='text-xs text-base-content/60'>
+                    Created {formatDate(new Date(note.createdAt))}
+                    {note.updatedAt && note.updatedAt !== note.createdAt && (
+                      <> · Edited {formatRelative(new Date(note.updatedAt))}</>
+                    )}
+                  </span>
+                </div>
+
                 <div className='form-control mb-4'>
-                  <label className='label'>
-                    <span className='label-text'>Title</span>
+                  <label htmlFor='edit-title' className='label'>
+                    <span className='label-text font-bold'>Title</span>
                   </label>
-                  <input type="text" 
-                  placeholder='Note Title'
-                  className='input input-bordered'
-                  value={note.title}
-                  onChange={(e) => setNote({...note, title: e.target.value})}
+                  <input
+                    id='edit-title'
+                    type="text"
+                    maxLength={200}
+                    placeholder='Note Title'
+                    className='input input-bordered focus:input-primary'
+                    value={note.title || ''}
+                    onChange={(e) => setNote({...note, title: e.target.value})}
                   />
                 </div>
                 <div className='form-control mb-4'>
-                  <label className='label'>
-                    <span className='label-text'>Content</span>
+                  <label htmlFor='edit-content' className='label'>
+                    <span className='label-text font-bold'>Content</span>
+                    <span className='label-text-alt text-base-content/60'>{note.content?.length || 0} chars</span>
                   </label>
-                  <textarea type="text" 
-                  placeholder='Write your note here...'
-                  className='textarea textarea-bordered h-32'
-                  value={note.content}
-                  onChange={(e) => setNote({...note, content: e.target.value})}
+                  <textarea
+                    id='edit-content'
+                    placeholder='Write your note here...'
+                    className='textarea textarea-bordered min-h-[240px] md:min-h-[300px] leading-relaxed text-sm focus:textarea-primary'
+                    value={note.content || ''}
+                    onChange={(e) => setNote({...note, content: e.target.value})}
                   />
                 </div>
 
-                <div className='card-actions justify-end'>
-                  <button className='btn btn-primary text-amber-100' disabled={saving} onClick={handleSave}>
-                    {saving ? 'Save...' : 'Save Changes'}
+                <div className='card-actions items-center justify-between mt-4'>
+                  <span className='text-xs flex items-center gap-2' aria-live='polite'>
+                    {isDirty ? (
+                      <>
+                        <span className='size-2 rounded-full bg-warning' aria-hidden='true' />
+                        <span className='text-base-content/70'>Unsaved changes</span>
+                        <span className='hidden sm:inline text-base-content/50'>
+                          · <kbd className='kbd kbd-xs'>Ctrl</kbd> + <kbd className='kbd kbd-xs'>S</kbd>
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className='size-2 rounded-full bg-success' aria-hidden='true' />
+                        <span className='text-base-content/60'>All changes saved</span>
+                      </>
+                    )}
+                  </span>
+                  <button
+                    id='details-save'
+                    className='btn btn-primary text-primary-content min-w-36 gap-2'
+                    disabled={saving || !isDirty}
+                    onClick={handleSave}
+                  >
+                    {saving ? <span className='loading loading-spinner loading-sm' /> : <SaveIcon className='size-4' />}
+                    {saving ? 'Saving...' : 'Save Changes'}
                   </button>
-                </div>             
+                </div>
 
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete this note?"
+        message={`"${formatToUppercase(original?.title || '')}" will be permanently deleted. This can't be undone.`}
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={leaveOpen}
+        title="Discard unsaved changes?"
+        message="You have edits that haven't been saved. If you leave now, they'll be lost."
+        confirmLabel="Discard"
+        cancelLabel="Keep editing"
+        onConfirm={() => {
+          setLeaveOpen(false);
+          setOriginal(note);
+          navigate('/');
+        }}
+        onCancel={() => setLeaveOpen(false)}
+      />
+    </main>
   )
 }
 
